@@ -7,6 +7,7 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 - [Repo](https://github.com/sachinshenoy/wordle_solve "<Wordle Solver> Repo")
 - [RapidAPI](https://rapidapi.com/dpventures/api/wordsapi/pricing)
 - [WordsAPI](https://www.wordsapi.com/)
+- [ChromeDriver](https://chromedriver.chromium.org/downloads)
 
 
 ## Screenshot
