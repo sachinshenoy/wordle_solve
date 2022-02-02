@@ -51,6 +51,7 @@ python wordle_solve_automated.py
 - [ ] Optimized Wait timers.
 - [ ] Move the console messages to Logs.
 - [ ] Fewer API Calls.
+- [ ] Pick different Starting words.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
