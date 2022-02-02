@@ -5,6 +5,8 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 ## Links
 
 - [Repo](https://github.com/sachinshenoy/wordle_solve "<Wordle Solver> Repo")
+- [RapidAPI](https://rapidapi.com/dpventures/api/wordsapi/pricing)
+- [WordsAPI](https://www.wordsapi.com/)
 
 
 ## Screenshot
@@ -25,7 +27,7 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 
 - Clone the Repo
 - Sign up for [RapidAPI](https://rapidapi.com/dpventures/api/wordsapi/pricing) Key by subscribing to [WordsAPI](https://www.wordsapi.com/) plan.
-- Update the .env file with the API_KEY (Example file provided. DO NOT USE Quotes Around the Key string)
+- Update the .env file with the **API_KEY** (Example file provided. *DO NOT USE* Quotes Around the Key string)
 - Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the dependencies.
 - Download the appropriate [ChromeDriver](https://chromedriver.chromium.org/downloads) for the your version of Chrome Browser.
 
