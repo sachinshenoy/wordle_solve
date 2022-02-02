@@ -26,6 +26,7 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 
 ## Installation
 
+- **Requires Python Version >= 3.10.x**
 - Clone the Repo
 - Sign up for [RapidAPI](https://rapidapi.com/dpventures/api/wordsapi/pricing) Key by subscribing to [WordsAPI](https://www.wordsapi.com/) plan.
 - Update the .env file with the **API_KEY** (Example file provided. *DO NOT USE* Quotes Around the Key string)
