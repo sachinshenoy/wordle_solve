@@ -30,9 +30,11 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 
 ```bash
 python -m venv venv
+
 {--ACTIVATE THE VENV AS PER YOUR OS--}
+
 pip install -r requirements.txt
-python wordle_solve_automated.py
+
 ```
 
 ## Usage
