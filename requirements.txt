@@ -3,4 +3,3 @@ requests>=2.27.1
 requests-cache>=0.9.1
 rich>=11.0.0
 selenium>=4.1.0
-
