@@ -18,6 +18,7 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 
 ## Built With
 
+- Python 3.10.x
 - Requests
 - Rich
 - Selenium
