@@ -1,6 +1,6 @@
 # Wordle_Solve
 
-Wordle_Solve is a script written in Python using the selenium module and RapidAPI (WordsAPI) service to try and solve the daily Wordle puzzle by taking control of the browser instance on your system. This has only been tested on Windows 10.
+Wordle_Solve is a script written in Python using the selenium module and RapidAPI (WordsAPI) service to try and solve the daily Wordle puzzle by taking control of the browser instance on your system. This has only been tested on Windows 10 in light and dark mode.
 
 ## Links
 
