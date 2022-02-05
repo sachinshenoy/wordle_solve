@@ -1,3 +1,4 @@
+from collections import Counter
 import logging
 import sys
 import time
@@ -11,6 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+start_word = "roate"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -82,7 +84,7 @@ def load_words():
     return five_letter_words
 
 
-def solution_found(result_dict):
+def solution_found(result_list):
     """
     Get the input dictionary with determination of each character's validity
     and returns a true/false bool to indicate if the solution has been
@@ -93,11 +95,11 @@ def solution_found(result_dict):
     Returns:
         Bool with True or False to indicate if the wordle solution has been found.
     """
-    if set(result_dict.values()) == {"correct"}:
+    if set(result_list) == {"correct"}:
         print("Congratulations - Solution Found \U0001F44D")
         print("Scripted by Sachin Shenoy")
         print("Twitter: https://twitter.com/sachinshenoy")
-    return set(result_dict.values()) == {"correct"}
+    return set(result_list) == {"correct"}
 
 
 def sendkeys(web_driver, word):
@@ -136,7 +138,7 @@ def find_bg(web_driver, word):
         [dict]: Dictionary of characters in the word as keys and the
         results as values.
     """
-    char_results = {}
+    char_results = []
     for char in track(word, description="Analyzing Results"):
         bg = web_driver.find_element(
             By.CSS_SELECTOR, keyboard[char]
@@ -144,20 +146,20 @@ def find_bg(web_driver, word):
         # rprint(f"Char - {char} BackGround: {bg}")
         match bg:
             case "rgba(181, 159, 59, 1)" | "rgba(201, 180, 88, 1)":
-                char_results[char] = "present"
+                char_results.append("present")
             case "rgba(58, 58, 60, 1)" | "rgba(120, 124, 126, 1)":
-                char_results[char] = "absent"
+                char_results.append("absent")
             case "rgba(83, 141, 78, 1)" | "rgba(106, 170, 100, 1)":
-                char_results[char] = "correct"
+                char_results.append("correct")
             case "rgba(129, 131, 132, 1)":
-                char_results[char] = "other"
+                char_results.append("other")
             case default:
-                char_results[char] = "other"
+                char_results.append("other")
     rprint(f"Word Result - {char_results}")
     return char_results
 
 
-def solve_row(row_result):
+def solve_row(row_results, word_guess):
     """
     Receives a dictionary with the results of the previous word entered.
     It then performs two actions:
@@ -177,25 +179,28 @@ def solve_row(row_result):
         [str]: Like solution word
     """
     word_list = current_word_list.copy()
-    for idx, char in enumerate(row_result):
-        match row_result[char]:
+    for idx, guess in enumerate(zip(word_guess, row_results)):
+        match guess[1]:
             case "present":
                 for word in word_list:
-                    if not (char in word) or (char == word[idx]):
+                    if not (guess[0] in word) or (guess[0] == word[idx]):
                         current_word_list.remove(word)
                 word_list = current_word_list.copy()
             case "absent":
                 for word in word_list:
-                    if char in word:
+                    if guess[0] in word and Counter(word_guess)[guess[0]] == 1:
                         current_word_list.remove(word)
                 word_list = current_word_list.copy()
             case "correct":
                 for word in word_list:
-                    if not (char == word[idx]):
+                    if (
+                        not (guess[0] == word[idx])
+                        and Counter(word_guess)[guess[0]] == 1
+                    ):
                         current_word_list.remove(word)
                 word_list = current_word_list.copy()
             case "other":
-                print(f"Character - {char} at index {idx} has state 'other'")
+                print(f"Character - {guess[0]} at index {idx} has state 'other'")
                 sys.exit("Something went wrong. Character status incorrect !")
     print(f"Current Word List length - {str(len(word_list))}")
 
@@ -224,6 +229,7 @@ def solve_row(row_result):
             else:
                 word_dict[0.0].append(word)
     reverse_sorted_keys = sorted(word_dict, reverse=True)
+    current_word_list.remove(word_dict[reverse_sorted_keys[0]])
     rprint(f"Word-Dict: {word_dict}")
     return word_dict[reverse_sorted_keys[0]]
 
@@ -266,29 +272,29 @@ def main():
     #     By.CSS_SELECTOR, "div:nth-child(1) > button:nth-child(2)"
     # ).click()
 
-    sendkeys(game_keyboard_root_shadow, "uraei")
+    sendkeys(game_keyboard_root_shadow, start_word)
     time.sleep(5)
-    row_result = find_bg(game_keyboard_root_shadow, "uraei")
-    new_word = solve_row(row_result)
-    if solution_found(row_result):
+    row_results = find_bg(game_keyboard_root_shadow, start_word)
+    new_word = solve_row(row_results, start_word)
+    if solution_found(row_results):
         sys.exit()
 
     # sendkeys(game_keyboard_root_shadow, "stomp")
     # time.sleep(5)
-    # row_result = find_bg(game_keyboard_root_shadow, "stomp")
-    # new_word = solve_row(row_result)
-    # if solution_found(row_result):
+    # row_results = find_bg(game_keyboard_root_shadow, "stomp")
+    # new_word = solve_row(row_results, "stomp")
+    # if solution_found(row_results, "stomp"):
     #     sys.exit()
 
     for _ in range(4):
         sendkeys(game_keyboard_root_shadow, new_word)
-        time.sleep(5)
-        row_result = find_bg(game_keyboard_root_shadow, new_word)
-        if solution_found(row_result):
+        time.sleep(7)
+        row_results = find_bg(game_keyboard_root_shadow, new_word)
+        if solution_found(row_results):
             # share_button = game_modal_root_shadow.find_element(By.CSS_SELECTOR, "#keyboard")
             sys.exit()
         else:
-            new_word = solve_row(row_result)
+            new_word = solve_row(row_results, new_word)
     print("Uh Oh - Couldn't find the Solution \U0001F622")
 
 
