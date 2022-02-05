@@ -194,8 +194,8 @@ def solve_row(row_result):
 
     # This is the avoid a API Call to get word frequencies
     # as we know the second word is going to be 'stomp'
-    # if "".join(row_result.keys()) == "uraei":
-    #     return {7.0: "stomp"}
+    if "".join(row_result.keys()) == "uraei":
+        return {7.0: "stomp"}
 
     word_dict = {}
     word_dict[0.0] = []
