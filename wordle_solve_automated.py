@@ -45,7 +45,14 @@ keyboard = {
 
 
 current_word_list = []
-requests_cache.install_cache(cache_name="wordle", backend="sqlite", expire_after=600)
+requests_cache.install_cache(
+    cache_name="wordle",
+    backend="sqlite",
+    expire_after=-1,
+    ignored_parameters=["x-rapidapi-key"],
+    match_headers=True,
+    stale_if_error=True,
+)
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -134,7 +141,7 @@ def find_bg(web_driver, word):
         bg = web_driver.find_element(
             By.CSS_SELECTOR, keyboard[char]
         ).value_of_css_property("background-color")
-        rprint(f"Char - {char} BackGround: {bg}")
+        # rprint(f"Char - {char} BackGround: {bg}")
         match bg:
             case "rgba(181, 159, 59, 1)" | "rgba(201, 180, 88, 1)":
                 char_results[char] = "present"
@@ -194,8 +201,8 @@ def solve_row(row_result):
 
     # This is the avoid a API Call to get word frequencies
     # as we know the second word is going to be 'stomp'
-    if "".join(row_result.keys()) == "uraei":
-        return {7.0: "stomp"}
+    # if "".join(row_result.keys()) == "uraei":
+    #     return {7.0: "stomp"}
 
     word_dict = {}
     word_dict[0.0] = []
@@ -208,6 +215,8 @@ def solve_row(row_result):
             "x-rapidapi-key": API_KEY,
         }
         response = requests.request("GET", url, headers=headers)
+        if response.from_cache:
+            print(f"{word} retrived from Cache!")
         response_json = response.json()
         if response.ok:
             if response_json.get("frequency"):
