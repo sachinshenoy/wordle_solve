@@ -12,7 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-start_word = "roate"
+start_word = "irate"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -45,6 +45,7 @@ keyboard = {
     "del": "div:nth-child(3) > button:nth-child(10)",
 }
 
+start_time = time.time()
 
 current_word_list = []
 requests_cache.install_cache(
@@ -96,9 +97,10 @@ def solution_found(result_list):
         Bool with True or False to indicate if the wordle solution has been found.
     """
     if set(result_list) == {"correct"}:
-        print("Congratulations - Solution Found \U0001F44D")
-        print("Scripted by Sachin Shenoy")
-        print("Twitter: https://twitter.com/sachinshenoy")
+        rprint("Congratulations - Solution Found \U0001F44D")
+        rprint(f"Script Execution Time = {time.time() - start_time:.2f} Secs")
+        rprint("Scripted by Sachin Shenoy")
+        rprint("Twitter: https://twitter.com/sachinshenoy")
     return set(result_list) == {"correct"}
 
 
@@ -211,6 +213,7 @@ def solve_row(row_results, word_guess):
 
     word_dict = {}
     word_dict[0.0] = []
+    cache_count = 0
     config = dotenv_values(".env")
     API_KEY = config.get("API_KEY")
     for word in word_list:
@@ -221,7 +224,7 @@ def solve_row(row_results, word_guess):
         }
         response = requests.request("GET", url, headers=headers)
         if response.from_cache:
-            print(f"{word} retrived from Cache!")
+            cache_count += 1
         response_json = response.json()
         if response.ok:
             if response_json.get("frequency"):
@@ -231,6 +234,7 @@ def solve_row(row_results, word_guess):
     reverse_sorted_keys = sorted(word_dict, reverse=True)
     current_word_list.remove(word_dict[reverse_sorted_keys[0]])
     rprint(f"Word-Dict: {word_dict}")
+    rprint(f"API Cache Hit Rate : {(cache_count*100)/len(word_list):.2f} %")
     return word_dict[reverse_sorted_keys[0]]
 
 
@@ -244,6 +248,13 @@ def main():
 
     global current_word_list
     current_word_list = load_words()
+
+    if not (start_word in current_word_list) or not (len(start_word) == 5):
+        rprint("Uh Oh - Please check 'Start Word' \U0001F622")
+        rprint(f"Script Execution Time = {time.time() - start_time: .2f} Secs")
+        rprint("Scripted by Sachin Shenoy")
+        rprint("Twitter: https://twitter.com/sachinshenoy")
+        sys.exit()
 
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
@@ -273,7 +284,7 @@ def main():
     # ).click()
 
     sendkeys(game_keyboard_root_shadow, start_word)
-    time.sleep(5)
+    time.sleep(3)
     row_results = find_bg(game_keyboard_root_shadow, start_word)
     new_word = solve_row(row_results, start_word)
     if solution_found(row_results):
@@ -288,14 +299,15 @@ def main():
 
     for _ in range(4):
         sendkeys(game_keyboard_root_shadow, new_word)
-        time.sleep(7)
+        time.sleep(3)
         row_results = find_bg(game_keyboard_root_shadow, new_word)
         if solution_found(row_results):
             # share_button = game_modal_root_shadow.find_element(By.CSS_SELECTOR, "#keyboard")
             sys.exit()
         else:
             new_word = solve_row(row_results, new_word)
-    print("Uh Oh - Couldn't find the Solution \U0001F622")
+    rprint("Uh Oh - Couldn't find the Solution \U0001F622")
+    rprint(f"Script Execution Time = {time.time() - start_time: .2f} Secs")
 
 
 if __name__ == "__main__":
