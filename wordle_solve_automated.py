@@ -273,14 +273,14 @@ def main():
     if solution_found(row_result):
         sys.exit()
 
-    sendkeys(game_keyboard_root_shadow, "stomp")
-    time.sleep(5)
-    row_result = find_bg(game_keyboard_root_shadow, "stomp")
-    new_word = solve_row(row_result)
-    if solution_found(row_result):
-        sys.exit()
+    # sendkeys(game_keyboard_root_shadow, "stomp")
+    # time.sleep(5)
+    # row_result = find_bg(game_keyboard_root_shadow, "stomp")
+    # new_word = solve_row(row_result)
+    # if solution_found(row_result):
+    #     sys.exit()
 
-    for _ in range(3):
+    for _ in range(4):
         sendkeys(game_keyboard_root_shadow, new_word)
         time.sleep(5)
         row_result = find_bg(game_keyboard_root_shadow, new_word)
