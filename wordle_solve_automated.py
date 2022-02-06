@@ -296,6 +296,7 @@ def main():
     game_keyboard_root_shadow = game_keyboard_root.shadow_root
     game_keyboard_root_shadow.find_element(By.CSS_SELECTOR, "#keyboard")
 
+    # Send the start word to the Wordle Puzzle
     sendkeys(game_keyboard_root_shadow, start_word)
     time.sleep(3)
     row_results = find_bg(game_app_root_shadow, 1)
@@ -304,10 +305,10 @@ def main():
         sys.exit()
 
     # sendkeys(game_keyboard_root_shadow, "stomp")
-    # time.sleep(5)
-    # row_results = find_bg(game_keyboard_root_shadow, "stomp")
+    # time.sleep(3)
+    # row_results = find_bg(game_app_root_shadow, 2)
     # new_word = solve_row(row_results, "stomp")
-    # if solution_found(row_results, "stomp"):
+    # if solution_found(row_results):
     #     sys.exit()
 
     for i in range(2, 7):
