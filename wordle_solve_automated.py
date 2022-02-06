@@ -12,7 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-start_word = "irate"
+start_word = "arise"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -63,25 +63,25 @@ logging.basicConfig(
 )
 
 
-def load_words():
+def load_words(file_name):
     """
-    Loads the words from the wordle_words.txt list and cleans up the words
-    list to ensure that the words are stripped of any whitespaces
-    and are only 5 characters long and are in lower case.
+    Loads the words from the filename (One word per line) provided
+    and cleans up the words list to ensure that the words are stripped
+    of any whitespaces and are only 5 characters long and are in lower case.
 
 
     Returns:
-        [list]: List of potential words for the wordle solution
+        [list]: List of words from the file containing the words.
     """
     five_letter_words = []
     # Loads the Dictionary text file
-    with open("wordle_words.txt") as word_file:
+    with open(file_name) as word_file:
         lines = word_file.readlines()
         # Filter all words which are not 5 letters.
         for line in lines:
             if len(line.strip()) == 5:
                 five_letter_words.append(line.strip().lower())
-    print(f"Current Word List length - {len(five_letter_words)}")
+    print(f"Number of words in the {file_name} - {len(five_letter_words)}")
     return five_letter_words
 
 
@@ -122,30 +122,41 @@ def sendkeys(web_driver, word):
     web_driver.find_element(By.CSS_SELECTOR, keyboard["enter"]).click()
 
 
-def find_bg(web_driver, word):
+def find_bg(web_driver, row_number):
     """
-    Uses the background colors of the words on the onscreen
-    keyboard (as it matches the grid) to assign them results like:
+    Identifies the background colors of the words from the results grid
+    and assigns them results as follows to list:
     Green: "correct"
     Yellow: "present"
     Gray: "absent"
-    These results are then returned for each character in the work
-    as a disctionary with their associated results.
+    These results are then returned for each character in the word
+    as a list of results.
 
     Args:
         web_driver (selenium.webdrider): Selenium Webdriver
-        word (str): The word which was guessed
+        row_number (int): Row number for which the results are needed.
 
     Returns:
-        [dict]: Dictionary of characters in the word as keys and the
-        results as values.
+        [list]: List containing 5 elements with correspond to each
+        character in the row being analyzed
     """
     char_results = []
-    for char in track(word, description="Analyzing Results"):
-        bg = web_driver.find_element(
-            By.CSS_SELECTOR, keyboard[char]
-        ).value_of_css_property("background-color")
-        # rprint(f"Char - {char} BackGround: {bg}")
+    result_list = []
+    game_row_x_root = web_driver.find_element(
+        By.CSS_SELECTOR, f"#board > game-row:nth-child({row_number})"
+    )
+    game_row_x_root_shadow = game_row_x_root.shadow_root
+    for i in range(1, 6):
+        game_row_x_i_root = game_row_x_root_shadow.find_element(
+            By.CSS_SELECTOR, f"div > game-tile:nth-child({i})"
+        )
+        game_row_x_i_root_shadow = game_row_x_i_root.shadow_root
+        cell = game_row_x_i_root_shadow.find_element(By.CSS_SELECTOR, "div")
+        cell_bg = cell.value_of_css_property("background-color")
+        result_list.append(cell_bg)
+        # rprint(cell_bg)
+
+    for bg in track(result_list, description="Analyzing Results"):
         match bg:
             case "rgba(181, 159, 59, 1)" | "rgba(201, 180, 88, 1)":
                 char_results.append("present")
@@ -178,7 +189,7 @@ def solve_row(row_results, word_guess):
         word with the results like "present", "absent" or "correct"
 
     Returns:
-        [str]: Like solution word
+        [str]: Best solution word based on previous results
     """
     word_list = current_word_list.copy()
     for idx, guess in enumerate(zip(word_guess, row_results)):
@@ -192,12 +203,14 @@ def solve_row(row_results, word_guess):
                 for word in word_list:
                     if guess[0] in word and Counter(word_guess)[guess[0]] == 1:
                         current_word_list.remove(word)
+                    elif guess[0] == word[idx]:
+                        current_word_list.remove(word)
                 word_list = current_word_list.copy()
             case "correct":
                 for word in word_list:
                     if (
                         not (guess[0] == word[idx])
-                        and Counter(word_guess)[guess[0]] == 1
+                        # and Counter(word_guess)[guess[0]] == 1
                     ):
                         current_word_list.remove(word)
                 word_list = current_word_list.copy()
@@ -247,9 +260,12 @@ def main():
     """
 
     global current_word_list
-    current_word_list = load_words()
+    current_word_list = load_words("wordle_words.txt")
+    allowed_guesses = load_words("wordle_allowed_guesses.txt")
 
-    if not (start_word in current_word_list) or not (len(start_word) == 5):
+    if not (start_word in current_word_list or start_word in allowed_guesses) or not (
+        len(start_word) == 5
+    ):
         rprint("Uh Oh - Please check 'Start Word' \U0001F622")
         rprint(f"Script Execution Time = {time.time() - start_time: .2f} Secs")
         rprint("Scripted by Sachin Shenoy")
@@ -279,13 +295,10 @@ def main():
     )
     game_keyboard_root_shadow = game_keyboard_root.shadow_root
     game_keyboard_root_shadow.find_element(By.CSS_SELECTOR, "#keyboard")
-    # game_keyboard_root_shadow.find_element(
-    #     By.CSS_SELECTOR, "div:nth-child(1) > button:nth-child(2)"
-    # ).click()
 
     sendkeys(game_keyboard_root_shadow, start_word)
     time.sleep(3)
-    row_results = find_bg(game_keyboard_root_shadow, start_word)
+    row_results = find_bg(game_app_root_shadow, 1)
     new_word = solve_row(row_results, start_word)
     if solution_found(row_results):
         sys.exit()
@@ -297,12 +310,11 @@ def main():
     # if solution_found(row_results, "stomp"):
     #     sys.exit()
 
-    for _ in range(4):
+    for i in range(2, 7):
         sendkeys(game_keyboard_root_shadow, new_word)
         time.sleep(3)
-        row_results = find_bg(game_keyboard_root_shadow, new_word)
+        row_results = find_bg(game_app_root_shadow, i)
         if solution_found(row_results):
-            # share_button = game_modal_root_shadow.find_element(By.CSS_SELECTOR, "#keyboard")
             sys.exit()
         else:
             new_word = solve_row(row_results, new_word)

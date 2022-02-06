@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,python,venv,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,python,venv,visualstudiocode
 
+### My Ignores
+scratch*.py
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
