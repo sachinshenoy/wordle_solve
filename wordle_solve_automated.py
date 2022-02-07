@@ -1,5 +1,6 @@
 from collections import Counter
 import logging
+import re
 import sys
 import time
 
@@ -12,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-start_word = "roate"
+start_word = "uraei"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -191,6 +192,27 @@ def solve_row(row_results, word_guess):
     Returns:
         [str]: Best solution word based on previous results
     """
+    multi_char = {}
+
+    # Checks if a word guess has repeating characters. If there is a charater
+    # repearing, it then updates the multi_char dictionary with the row
+    # result determination of each of those repeating charaters.
+    # This is done using regex. The span for each finditer result
+    # returns a tuple with the location where the substring started and ended.
+    # We use the starting position of the substring to gather the row result
+    # for that character from the row_result list and add all the findings
+    # is to a temp list which is then added to the multi_char dictionary
+    # and used further down in the word elimination logic.
+
+    if len(set(word_guess)) < 5:
+        for char, occurance in Counter(word_guess).most_common():
+            if occurance > 1:
+                temp_list = []
+                matches = re.finditer(char, word_guess)
+                for result in matches:
+                    temp_list.append(row_results[result.span()[0]])
+                multi_char[char] = temp_list
+
     word_list = current_word_list.copy()
     for idx, guess in enumerate(zip(word_guess, row_results)):
         match guess[1]:
@@ -214,10 +236,41 @@ def solve_row(row_results, word_guess):
                     ):
                         current_word_list.remove(word)
                 word_list = current_word_list.copy()
+
             case "other":
                 print(f"Character - {guess[0]} at index {idx} has state 'other'")
                 sys.exit("Something went wrong. Character status incorrect !")
-    print(f"Current Word List length - {str(len(word_list))}")
+    # Check if a word guess has repeating characters. If there is a charater
+    # repearing, it then checks to see if both the characters need to exist
+    # in the word based of word results.
+    # i.e : If one is present and other is correct or the other way around.
+    # If that is the case then it will remove all words from the word list
+    # which do not have these characters.
+    # Assumption: There can only be two or three repeating characters
+    if len(set(word_guess)) < 5:
+        for char, occurance in Counter(word_guess).most_common():
+            if occurance > 1:
+                match multi_char[char]:
+                    case ["present", "correct"] | ["correct", "present"]:
+                        for word in word_list:
+                            if Counter(word)[char] != occurance:
+                                current_word_list.remove(word)
+                    case ["present", "correct", "correct"] | [
+                        "present",
+                        "correct",
+                        "present",
+                    ] | ["correct", "present", "present"] | [
+                        "correct",
+                        "present",
+                        "correct",
+                    ]:
+                        for word in word_list:
+                            if Counter(word)[char] != occurance:
+                                current_word_list.remove(word)
+        word_list = current_word_list.copy()
+
+    rprint(f"Multi Character Dictionary: {multi_char}")
+    rprint(f"Current Word List length - {str(len(word_list))}")
 
     # This is the avoid a API Call to get word frequencies
     # as we know the second word is going to be 'stomp'
@@ -248,6 +301,7 @@ def solve_row(row_results, word_guess):
     current_word_list.remove(word_dict[reverse_sorted_keys[0]])
     rprint(f"Word-Dict: {word_dict}")
     rprint(f"API Cache Hit Rate : {(cache_count*100)/len(word_list):.2f} %")
+    rprint(f"Recommended Word : {word_dict[reverse_sorted_keys[0]]}")
     return word_dict[reverse_sorted_keys[0]]
 
 
