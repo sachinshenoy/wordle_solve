@@ -5,15 +5,10 @@ import sys
 import time
 from collections import Counter
 
-# import requests
-# from requests_cache import CachedSession
-# from dotenv import dotenv_values
 from rich import print as rprint
 from rich.progress import track
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
-# from selenium.webdriver.common.keys import Keys
 
 start_word = "uraei"
 keyboard = {
@@ -52,15 +47,6 @@ start_time = time.time()
 
 current_word_list = []
 
-# requests_cache.install_cache(
-#     cache_name="wordle",
-#     backend="sqlite",
-#     expire_after=-1,
-#     ignored_parameters=["x-rapidapi-key"],
-#     allowable_codes=[200],
-#     match_headers=True,
-#     stale_if_error=True,
-# )
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -283,45 +269,7 @@ def solve_row(row_results, word_guess):
     #     return {7.0: "stomp"}
 
     word_dict = {}
-    # word_dict[0.0] = []
-    # cache_count = 0
     max_frequency = 0
-    # config = dotenv_values(".env")
-    # API_KEY = config.get("API_KEY")
-
-    # session = CachedSession(
-    #     cache_name="wordle-v2",
-    #     backend="sqlite",
-    #     expire_after=-1,  # Never expire responses
-    #     allowable_methods=[
-    #         "GET"
-    #     ],  # Cache POST requests to avoid sending the same data twice
-    #     allowable_codes=[200],  # DO NOT Cache 400 responses
-    #     ignored_parameters=[
-    #         "x-rapidapi-key"
-    #     ],  # Don't match this param or save it in the cache
-    #     match_headers=True,  # Match all request headers
-    #     stale_if_error=True,  # In case of request errors, use stale cache data if possible
-    # )
-    # API Calls Disabled for now
-
-    # for word in word_list:
-    #     url = f"https://wordsapiv1.p.rapidapi.com/words/{word}"
-    #     headers = {
-    #         "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
-    #         "x-rapidapi-key": API_KEY,
-    #     }
-    #     response = session.get(url=url, headers=headers)
-    #     if response.from_cache:
-    #         cache_count += 1
-    #     else:
-    #         rprint(f"Not found in cache: {word}")
-    #     response_json = response.json()
-    #     if response.ok:
-    #         if response_json.get("frequency"):
-    #             word_dict[response_json["frequency"]] = word
-    #         else:
-    #             word_dict[0.0].append(word)
 
     with open("words_json.txt", "r") as fh:
         frequency_dict = json.load(fh)
@@ -336,7 +284,9 @@ def solve_row(row_results, word_guess):
     current_word_list.remove(recommended_word)
     rprint(f"Word-Dict: {word_dict}")
     # rprint(f"API Cache Hit Rate : {(cache_count*100)/len(word_list):.2f} %")
-    rprint(f"Recommended Word : {recommended_word}")
+    rprint(
+        f"Recommended Word : {recommended_word}, Frequency : {word_dict[recommended_word]}"
+    )
     return recommended_word
 
 
