@@ -12,7 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-start_word = "arise"
+start_word = "roate"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
