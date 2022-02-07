@@ -4,6 +4,7 @@
 
 ### My Ignores
 scratch*.py
+*.sqlite
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
