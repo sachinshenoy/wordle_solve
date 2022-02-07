@@ -55,10 +55,11 @@ python wordle_solve_automated.py
 
 ## Future Updates
 
-- [ ] Optimized Wait timers.
+- [X] ~~Optimized Wait timers.
 - [ ] Move the console messages to Logs.
-- [ ] Fewer API Calls.
-- [ ] Pick different Starting words.
+- [ ] Move away from BasicConfig for Logging
+- [X] ~~Fewer API Calls.
+- [X] ~~Pick different Starting words.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
