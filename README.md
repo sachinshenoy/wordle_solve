@@ -1,6 +1,6 @@
 # Wordle_Solve
 
-Wordle_Solve is a script written in Python using the selenium module and RapidAPI (WordsAPI) service to try and solve the daily Wordle puzzle by taking control of the browser instance on your system. This has only been tested on Windows 10 in light and dark mode.
+Wordle_Solve is a script written in Python using the selenium module to try and solve the daily Wordle puzzle by taking control of the browser instance on your system. This has only been tested on Windows 10 in light and dark mode. The WordsAPI hosted on RapidAPI was used to generate a Zipf distribution frequency score for each word in the Wordle word collection; which is then used to select the best guess for the next word from list condensed based on the results of the previous guesses.
 
 ## Links
 
@@ -19,18 +19,14 @@ Wordle_Solve is a script written in Python using the selenium module and RapidAP
 ## Built With
 
 - Python 3.10.x
-- Requests
 - Rich
 - Selenium
-- Python-Dotenv
 - Chromium WebDriver
 
 ## Installation
 
 - **Requires Python Version >= 3.10.x**
 - Clone the Repo
-- Sign up for [RapidAPI](https://rapidapi.com/dpventures/api/wordsapi/pricing) Key by subscribing to [WordsAPI](https://www.wordsapi.com/) plan.
-- Update the .env file with the **API_KEY** (Example file provided. *DO NOT USE* Quotes Around the Key string)
 - Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the dependencies.
 - Download the appropriate [ChromeDriver](https://chromedriver.chromium.org/downloads) for the your version of Chrome Browser and save it in the same folder as the python script.
 
