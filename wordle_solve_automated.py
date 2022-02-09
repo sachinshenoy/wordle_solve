@@ -10,7 +10,7 @@ from rich.progress import track
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-start_word = "exist"
+start_word = "tizzy"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -214,6 +214,12 @@ def solve_row(row_results, word_guess):
             case "absent":
                 for word in word_list:
                     if guess[0] in word and Counter(word_guess)[guess[0]] == 1:
+                        current_word_list.remove(word)
+                    elif (
+                        guess[0] in word
+                        and Counter(word_guess)[guess[0]] > 1
+                        and set(multi_char[guess[0]]) == {"absent"}
+                    ):
                         current_word_list.remove(word)
                     elif guess[0] == word[idx]:
                         current_word_list.remove(word)
