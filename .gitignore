@@ -6,6 +6,7 @@
 scratch*.py
 *.sqlite
 *.old
+ignore/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
