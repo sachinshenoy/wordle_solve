@@ -10,7 +10,7 @@ from rich.progress import track
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-start_word = "uraei"
+start_word = "audio"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -160,7 +160,7 @@ def find_bg(web_driver, row_number):
                 char_results.append("other")
             case default:
                 char_results.append("other")
-    rprint(f"Word Result - {char_results}")
+    # rprint(f"Word Result - {char_results}")
     return char_results
 
 
@@ -260,7 +260,7 @@ def solve_row(row_results, word_guess):
                                 current_word_list.remove(word)
         word_list = current_word_list.copy()
 
-    rprint(f"Multi Character Dictionary: {multi_char}")
+    # rprint(f"Multi Character Dictionary: {multi_char}")
     rprint(f"Current Word List length - {str(len(word_list))}")
 
     # This is the avoid a API Call to get word frequencies
@@ -282,7 +282,7 @@ def solve_row(row_results, word_guess):
 
     # reverse_sorted_keys = sorted(word_dict, reverse=True)
     current_word_list.remove(recommended_word)
-    rprint(f"Word-Dict: {word_dict}")
+    # rprint(f"Word-Dict: {word_dict}")
     # rprint(f"API Cache Hit Rate : {(cache_count*100)/len(word_list):.2f} %")
     rprint(
         f"Recommended Word : {recommended_word}, Frequency : {word_dict[recommended_word]}"
