@@ -10,7 +10,7 @@ from rich.progress import track
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-start_word = "audio"
+start_word = "exist"
 keyboard = {
     "q": "div:nth-child(1) > button:nth-child(1)",
     "w": "div:nth-child(1) > button:nth-child(2)",
@@ -39,8 +39,7 @@ keyboard = {
     "b": "div:nth-child(3) > button:nth-child(6)",
     "n": "div:nth-child(3) > button:nth-child(7)",
     "m": "div:nth-child(3) > button:nth-child(8)",
-    "x": "div:nth-child(3) > button:nth-child(9)",
-    "del": "div:nth-child(3) > button:nth-child(10)",
+    "del": "div:nth-child(3) > button:nth-child(9)",
 }
 
 start_time = time.time()
